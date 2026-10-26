@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전세연장 서류 체크</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  :root { --bg:#f6f4ef; --card:#fff; --ink:#1d1d1b; --sub:#77746c; --line:#e4e0d6; --ok:#3f7a52; --tag:#efece4; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#161614; --card:#21211e; --ink:#eceae4; --sub:#9a978e; --line:#33322e; --ok:#7fbf8f; --tag:#2b2b27; color-scheme:dark; } }
+  :root[data-theme="dark"] { --bg:#161614; --card:#21211e; --ink:#eceae4; --sub:#9a978e; --line:#33322e; --ok:#7fbf8f; --tag:#2b2b27; color-scheme:dark; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 -apple-system, "Apple SD Gothic Neo", sans-serif; }
+  main { max-width:640px; margin:0 auto; padding-block:28px 60px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+  label > span { min-width:0; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  .lead { color:var(--sub); margin:0 0 18px; font-size:14px; }
+  .bar { height:8px; background:var(--line); border-radius:9px; overflow:hidden; margin-bottom:6px; }
+  .bar i { display:block; height:100%; width:0; background:var(--ok); transition:width .25s; }
+  .count { font-size:13px; color:var(--sub); margin-bottom:22px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:6px 16px; margin-bottom:16px; }
+  h2 { font-size:15px; margin:12px 0 4px; display:flex; justify-content:space-between; }
+  h2 small { color:var(--sub); font-weight:400; }
+  label { display:flex; gap:12px; padding:11px 0; border-top:1px solid var(--line); cursor:pointer; align-items:flex-start; }
+  h2 + label { border-top:0; }
+  input { width:20px; height:20px; margin:2px 0 0; accent-color:var(--ok); flex:none; }
+  .t { font-weight:600; }
+  .w { display:block; font-size:13px; color:var(--sub); }
+  .tag { font-size:11px; background:var(--tag); color:var(--sub); padding:1px 7px; border-radius:6px; margin-left:6px; font-weight:400; }
+  label:has(input:checked) .t { text-decoration:line-through; color:var(--sub); }
+  button { margin-top:6px; background:none; border:1px solid var(--line); color:var(--sub); border-radius:8px; padding:7px 12px; font:inherit; font-size:13px; cursor:pointer; }
+</style>
+</head>
+<body>
+<main>
+  <h1>전세대출 연장 서류</h1>
+  <p class="lead">버팀목 신혼부부 연장용. 체크는 이 기기에 저장돼요.</p>
+  <div class="bar"><i id="fill"></i></div>
+  <div class="count" id="count"></div>
+
+  <section>
+    <h2>공통 <small>정부24 · 대법원</small></h2>
+    <label><input type="checkbox"><span><span class="t">주민등록등본</span><span class="w">정부24</span></span></label>
+    <label><input type="checkbox"><span><span class="t">주민등록초본 <span class="tag">주소 변경 이력 포함</span></span><span class="w">정부24 · 발급할 때 "주소 변동 사항 포함" 체크</span></span></label>
+    <label><input type="checkbox"><span><span class="t">가족관계증명서</span><span class="w">대법원 전자가족관계등록시스템</span></span></label>
+    <label><input type="checkbox"><span><span class="t">전입세대열람확인서</span><span class="w">정부24 또는 주민센터</span></span></label>
+    <label><input type="checkbox"><span><span class="t">임대차계약서 <span class="tag">확정일자</span></span><span class="w">갖고 있는 원본(연장 계약서)</span></span></label>
+    <label><input type="checkbox"><span><span class="t">증액분 이체 영수증 <span class="tag">보증금 올랐을 때만</span></span><span class="w">은행 앱 이체 확인증</span></span></label>
+  </section>
+
+  <section>
+    <h2>사장님 (신청인) <small>홈택스 · 건보공단</small></h2>
+    <label><input type="checkbox"><span><span class="t">사업자등록증명원</span><span class="w">홈택스 · 위촉증명서 대신 이걸로</span></span></label>
+    <label><input type="checkbox"><span><span class="t">소득금액증명원 <span class="tag">2025 귀속</span></span><span class="w">홈택스 <b>개인</b> 로그인 → 종합소득세 신고자용 · 주민번호 공개</span></span></label>
+    <label><input type="checkbox"><span><span class="t">건강보험 자격득실확인서</span><span class="w">건강보험공단 앱·홈페이지</span></span></label>
+  </section>
+
+  <section>
+    <h2>와이프 (배우자) <small>본인 명의 로그인</small></h2>
+    <label><input type="checkbox"><span><span class="t">소득금액증명원 <span class="tag">2025 귀속</span></span><span class="w">홈택스 · 종합소득세 신고자용</span></span></label>
+    <label><input type="checkbox"><span><span class="t">건강보험 자격득실확인서</span><span class="w">7월 이후 일 안 한 기록이 여기 나와요</span></span></label>
+    <label><input type="checkbox"><span><span class="t">해촉증명서 <span class="tag">은행이 달라고 할 때만</span></span><span class="w">지금 점장(마지막 사업자) 한 장 · 양식은 잡무/해촉증명서</span></span></label>
+  </section>
+
+  <section>
+    <h2>창구에서 물어볼 것</h2>
+    <label><input type="checkbox"><span><span class="t">위촉증명서 대신 사업자등록증으로 되나요?</span></span></label>
+    <label><input type="checkbox"><span><span class="t">배우자는 7월 이후 일 안 해서 재직 서류가 없어요. 자격득실 + 소득금액증명원이면 되나요?</span></span></label>
+    <label><input type="checkbox"><span><span class="t">신생아 특례 버팀목으로 대환하면 금리가 어떻게 되나요?</span><span class="w">올해 아기 출생 → 대상일 수 있음</span></span></label>
+    <label><input type="checkbox"><span><span class="t">연장할 때 일부 상환 조건이나 금리 가산이 있나요?</span></span></label>
+  </section>
+
+  <button id="reset">체크 전부 지우기</button>
+</main>
+<script>
+  const boxes=[...document.querySelectorAll('input')], KEY='jeonse-ext-checks';
+  let saved=[]; try{ saved=JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){}
+  boxes.forEach((b,i)=>{ b.checked=!!saved[i]; b.addEventListener('change',upd); });
+  function upd(){
+    const s=boxes.map(b=>b.checked); try{ localStorage.setItem(KEY,JSON.stringify(s)); }catch(e){}
+    const n=s.filter(Boolean).length;
+    document.getElementById('fill').style.width=(n/boxes.length*100)+'%';
+    document.getElementById('count').textContent=n+' / '+boxes.length+' 완료';
+  }
+  document.getElementById('reset').onclick=()=>{ boxes.forEach(b=>b.checked=false); upd(); };
+  upd();
+</script>
+</body>
+</html>
