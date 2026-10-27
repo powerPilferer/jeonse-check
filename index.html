@@ -34,7 +34,7 @@
 <body>
 <main>
   <h1>전세대출 연장 서류</h1>
-  <p class="lead">버팀목 신혼부부 연장용. 체크는 이 기기에 저장돼요.</p>
+  <p class="lead">버팀목 신혼부부 연장용. 체크는 같이 보여요. <span id="sync"></span></p>
   <div class="bar"><i id="fill"></i></div>
   <div class="count" id="count"></div>
 
@@ -76,18 +76,41 @@
 
   <button id="reset">체크 전부 지우기</button>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-  const boxes=[...document.querySelectorAll('input')], KEY='jeonse-ext-checks';
+  const boxes=[...document.querySelectorAll('input')], KEY='jeonse-ext-checks', ROW='jeonse-ext';
+  const sync=document.getElementById('sync');
+  const sb=window.supabase && window.supabase.createClient('https://wbtgaydqpupxgmwmxbdv.supabase.co','sb_publishable_kZD_r_s3lca-tdu8NqABnA_WVgHWKBo');
   let saved=[]; try{ saved=JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){}
-  boxes.forEach((b,i)=>{ b.checked=!!saved[i]; b.addEventListener('change',upd); });
-  function upd(){
-    const s=boxes.map(b=>b.checked); try{ localStorage.setItem(KEY,JSON.stringify(s)); }catch(e){}
-    const n=s.filter(Boolean).length;
+  apply(saved);
+  boxes.forEach(b=>b.addEventListener('change',()=>save(boxes.map(x=>x.checked))));
+  document.getElementById('reset').onclick=()=>save(boxes.map(()=>false));
+  function apply(s){
+    boxes.forEach((b,i)=>b.checked=!!s[i]);
+    const n=boxes.filter(b=>b.checked).length;
     document.getElementById('fill').style.width=(n/boxes.length*100)+'%';
     document.getElementById('count').textContent=n+' / '+boxes.length+' 완료';
   }
-  document.getElementById('reset').onclick=()=>{ boxes.forEach(b=>b.checked=false); upd(); };
-  upd();
+  async function save(s){
+    apply(s); try{ localStorage.setItem(KEY,JSON.stringify(s)); }catch(e){}
+    if(!sb) return;
+    const {error}=await sb.from('jeonse_checks').update({checks:s,updated_at:new Date().toISOString()}).eq('id',ROW);
+    sync.textContent=error?'(저장 안 됨 · 다시 눌러 보세요)':'';
+  }
+  async function load(){
+    if(!sb){ sync.textContent='(이 기기에만 저장)'; return; }
+    const {data,error}=await sb.from('jeonse_checks').select('checks').eq('id',ROW).single();
+    if(error||!data){ sync.textContent='(연결 안 됨 · 이 기기에만 저장)'; return; }
+    apply(data.checks); try{ localStorage.setItem(KEY,JSON.stringify(data.checks)); }catch(e){}
+    sb.channel('jeonse').on('postgres_changes',{event:'UPDATE',schema:'public',table:'jeonse_checks',filter:'id=eq.'+ROW},
+      p=>{ apply(p.new.checks); try{ localStorage.setItem(KEY,JSON.stringify(p.new.checks)); }catch(e){} }).subscribe();
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refresh(); });
+  }
+  async function refresh(){
+    const {data}=await sb.from('jeonse_checks').select('checks').eq('id',ROW).single();
+    if(data) apply(data.checks);
+  }
+  load();
 </script>
 </body>
 </html>
